@@ -1,20 +1,65 @@
 package com.example.countryrouting.service;
 
 import com.example.countryrouting.model.Country;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.countryrouting.model.CountryGraph;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class RoutingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RoutingService.class);
+    /**
+     * Basically this implements a Breadth-first search on an undirectedm unweighted graph.
+     * Calculates the shortest path with a previousCountriesMap pointing back to previous steps in route.
+     *
+     * @param origin       Origin country
+     * @param destination  Destination country
+     * @param countryGraph Country graph
+     * @return The shortest countries route in the country graph.
+     */
+    public List<Country> calculateRoute(Country origin, Country destination, CountryGraph countryGraph) {
+        Set<Country> visitedCountries = new HashSet<>();
+        Queue<Country> queue = new LinkedList<>();
+        Map<Country, Country> previousCountriesMap = new HashMap<>();
 
-    public List<String> calculateRoute(Country origin, Country destination) {
-        LOGGER.info(origin + " => " + destination);
+        queue.add(origin);
+        visitedCountries.add(origin);
+        previousCountriesMap.put(origin, null);
 
-        return List.of("not implemented");
+        while (!queue.isEmpty()) {
+            Country currentCountry = queue.poll();
+
+            for (Country borderingCountry : countryGraph.getBorderingCountries().get(currentCountry)) {
+                if (!visitedCountries.contains(borderingCountry)) {
+
+                    previousCountriesMap.put(borderingCountry, currentCountry);
+
+                    if (borderingCountry.equals(destination)) {
+                        return calculateRouteViaPreviousLinks(destination, previousCountriesMap);
+                    }
+
+                    visitedCountries.add(borderingCountry);
+                    queue.add(borderingCountry);
+                }
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    private List<Country> calculateRouteViaPreviousLinks(Country destination, Map<Country, Country> previousCountriesMap) {
+        List<Country> countriesRoute = new ArrayList<>();
+        countriesRoute.add(destination);
+
+        Country previousCountry = previousCountriesMap.get(destination);
+        while (previousCountry != null) {
+            countriesRoute.add(previousCountry);
+            previousCountry = previousCountriesMap.get(previousCountry);
+        }
+
+        Collections.reverse(countriesRoute);
+
+        return countriesRoute;
     }
 }
