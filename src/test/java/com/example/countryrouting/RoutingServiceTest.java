@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -31,11 +30,14 @@ class RoutingServiceTest {
         // given
         CountryGraph countryGraph = loadCountryGraphFromFile();
 
+        Country origin = new Country("CZE");
+        Country destination = new Country("ITA");
+
         // when
-        List<Country> countriesRoute = routingService.calculateRoute(new Country("CZE"), new Country("ITA"), countryGraph);
+        List<Country> countriesRoute = routingService.calculateRoute(origin, destination, countryGraph);
 
         // then
-        assertThat(countriesRoute.stream().map(Country::getCode).collect(toList()), is(List.of("CZE", "AUT", "ITA")));
+        assertThat(countriesRoute, is(List.of(new Country("CZE"), new Country("AUT"), new Country("ITA"))));
     }
 
     @Test
@@ -43,11 +45,74 @@ class RoutingServiceTest {
         // given
         CountryGraph countryGraph = loadCountryGraphFromFile();
 
+        Country origin = new Country("CZE");
+        Country destination = new Country("USA");
+
         // when
-        List<Country> countriesRoute = routingService.calculateRoute(new Country("CZE"), new Country("USA"), countryGraph);
+        List<Country> countriesRoute = routingService.calculateRoute(origin, destination, countryGraph);
 
         // then
-        assertThat(countriesRoute.stream().map(Country::getCode).collect(toList()), is(List.of()));
+        assertThat(countriesRoute.size(), is(0));
+    }
+
+    @Test
+    void calculateRoute_shouldReturnEmptyRoute_whenOriginHasNoBorders() throws IOException {
+        // given
+        CountryGraph countryGraph = loadCountryGraphFromFile();
+
+        Country originWithNoBorders = new Country("ATA");
+        Country destination = new Country("CZE");
+
+        // when
+        List<Country> countriesRoute = routingService.calculateRoute(originWithNoBorders, destination, countryGraph);
+
+        // then
+        assertThat(countriesRoute.size(), is(0));
+    }
+
+    @Test
+    void calculateRoute_shouldFindRoute_originEqualsDestination() throws IOException {
+        // given
+        CountryGraph countryGraph = loadCountryGraphFromFile();
+
+        Country origin = new Country("CZE");
+        Country destination = new Country("CZE");
+
+        // when
+        List<Country> countriesRoute = routingService.calculateRoute(origin, destination, countryGraph);
+
+        // then
+        assertThat(countriesRoute, is(List.of(new Country("CZE"))));
+    }
+
+    @Test
+    void calculateRoute_shouldFindRoute_originIsNull() throws IOException {
+        // given
+        CountryGraph countryGraph = loadCountryGraphFromFile();
+
+        Country origin = null;
+        Country destination = new Country("CZE");
+
+        // when
+        List<Country> countriesRoute = routingService.calculateRoute(origin, destination, countryGraph);
+
+        // then
+        assertThat(countriesRoute.size(), is(0));
+    }
+
+    @Test
+    void calculateRoute_shouldFindRoute_destinationIsNull() throws IOException {
+        // given
+        CountryGraph countryGraph = loadCountryGraphFromFile();
+
+        Country origin = new Country("CZE");
+        Country destination = null;
+
+        // when
+        List<Country> countriesRoute = routingService.calculateRoute(origin, destination, countryGraph);
+
+        // then
+        assertThat(countriesRoute.size(), is(0));
     }
 
     private CountryGraph loadCountryGraphFromFile() throws IOException {

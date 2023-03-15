@@ -2,6 +2,7 @@ package com.example.countryrouting.service;
 
 import com.example.countryrouting.model.Country;
 import com.example.countryrouting.model.CountryGraph;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,7 +19,16 @@ public class RoutingService {
      * @param countryGraph Country graph
      * @return The shortest countries route in the country graph.
      */
-    public List<Country> calculateRoute(Country origin, Country destination, CountryGraph countryGraph) {
+    public List<Country> calculateRoute(@NonNull Country origin, @NonNull Country destination, @NonNull CountryGraph countryGraph) {
+
+        if (origin == null || destination == null) {
+            return Collections.emptyList();
+        }
+
+        if (origin.equals(destination)) {
+            return List.of(origin);
+        }
+
         Set<Country> visitedCountries = new HashSet<>();
         Queue<Country> queue = new LinkedList<>();
         Map<Country, Country> previousCountriesMap = new HashMap<>();
