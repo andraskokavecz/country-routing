@@ -30,8 +30,13 @@ public class RoutingController {
 
     @GetMapping("/routing/{origin}/{destination}")
     public List<String> getRouting(@PathVariable String origin, @PathVariable String destination) {
+
+        // In theory there is a bit of race-condition here,
+        // if data is not yet loaded via @PostConstruct at server startup.
         ExternalCountry[] externalCountries = this.externalCountryLoader.getExternalCountries();
 
+        // A possible optimization step: not to create the graph on every request, but store it somewhere.
+        // However requests still just take a few millis on my local machine.
         CountryGraph countryGraph = CountryGraphFactory.create(externalCountries);
 
         List<Country> countriesRoute = routingService.calculateRoute(new Country(origin), new Country(destination), countryGraph);
