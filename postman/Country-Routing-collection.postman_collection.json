@@ -33,7 +33,34 @@
 			"response": []
 		},
 		{
-			"name": "/routing/CZE/USA",
+			"name": "/routing/CZE/CZE",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/routing/CZE/CZE",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"routing",
+						"CZE",
+						"CZE"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/routing/CZE/USA - 400",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -54,6 +81,33 @@
 						"routing",
 						"CZE",
 						"USA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/routing/ATA/CZE - 400",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/routing/ATA/CZE",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"routing",
+						"ATA",
+						"CZE"
 					]
 				}
 			},
